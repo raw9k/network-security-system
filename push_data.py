@@ -1,11 +1,11 @@
 import os, sys, json
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv  # type: ignore
 load_dotenv()
 
-import pandas as pd
-import numpy as np
-import pymongo
+import pandas as pd  # type: ignore
+import numpy as np  # type: ignore
+import pymongo # type: ignore
 
 
 
