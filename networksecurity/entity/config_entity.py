@@ -16,7 +16,4 @@ class TrainingPipelineConfig:
 
 class DataIngestionConfig:
     def __init__(self, training_pipeline_config:TrainingPipelineConfig):
-        try:
-            pass
-        except:
-            pass
+        pass
