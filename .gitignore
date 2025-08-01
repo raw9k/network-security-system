@@ -9,7 +9,7 @@ __pycache__/
 *.so
 #mongo db
 connect_mongodb.py
-
+Artifacts
 
 # Distribution / packaging
 .Python

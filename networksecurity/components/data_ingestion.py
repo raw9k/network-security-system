@@ -1,6 +1,6 @@
 from networksecurity.exception.exception import NetworkSecurityException
 from networksecurity.logging.logger import logging
-
+from networksecurity.entity.artifact_entity import DataIngestionArtifacts
 ## Configration of data Ingestion config
 from networksecurity.entity.config_entity import DataIngestionConfig
 import os, sys, numpy as np, pymongo, pandas as pd
@@ -26,7 +26,7 @@ class DataIngestion:
         try:
             database_name = self.data_ingestion_config.database_name
             collection_name = self.data_ingestion_config.collection_name
-            self.mongo_client = pymongo.Mongo_Client(MONGO_DB_URL)
+            self.mongo_client = pymongo.MongoClient(MONGO_DB_URL)
             collection = self.mongo_client[database_name][collection_name]
             
             df = pd.DataFrame(list(collection.find()))
@@ -75,6 +75,10 @@ class DataIngestion:
             dataframe = self.json_to_dataframe()
             dataframe = self.export_data_into_feature_store(dataframe)
             self.split_data_as_train_test(dataframe)
+            
+            dataingestionartifacts = DataIngestionArtifacts(trained_file_path=self.data_ingestion_config.training_file_path,
+                                                            test_file_path=self.data_ingestion_config.testing_file_path)
+            return dataingestionartifacts
         except Exception as e:
             raise NetworkSecurityException(e,sys)
         
