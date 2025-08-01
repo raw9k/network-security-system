@@ -1,7 +1,8 @@
 from datetime import datetime
 import os
+import shutil
 from networksecurity.constants import training_pipeline
-
+from networksecurity.logging.logger import logging
 print(training_pipeline.PIPELINE_NAME)
 print(training_pipeline.ARTIFACT_DIR)
 
@@ -10,6 +11,12 @@ class TrainingPipelineConfig:
         timestamp= timestamp.strftime("%m_%d_%Y_%H_%M_%S")
         self.pipeline_name = training_pipeline.PIPELINE_NAME
         self.artifact_name = training_pipeline.ARTIFACT_DIR
+        
+        # Clean up previous artifacts folder if it exists
+        if os.path.exists(self.artifact_name):
+            shutil.rmtree(self.artifact_name)
+            logging.info(f"Removed previous artifacts folder: {self.artifact_name}")
+        
         self.artifact_dir = os.path.join(self.artifact_name,timestamp)
         self.timestamp: str = timestamp
 
