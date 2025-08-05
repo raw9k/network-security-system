@@ -1,8 +1,5 @@
 import os
 import sys
-import numpy as np # type: ignore
-import pandas as pd # type: ignore
-
 
 """
 Defining common constant variable for training pipeline
