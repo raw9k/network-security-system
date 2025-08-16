@@ -20,7 +20,7 @@ class DataTranformation:
             raise NetworkSecurityException(e,sys)
     
     @staticmethod
-    def read_data(file_path) -> pd.DataFrame:
+    def csv_converter(file_path) -> pd.DataFrame:
         try:
             return pd.read_csv(file_path)
         except Exception as e:
@@ -53,17 +53,17 @@ class DataTranformation:
         logging.info("Entered initiate_data_transformation method of dataTransformation Class")
         try:
             logging.info("Starting the Data Transformation")
-            train_df = DataTranformation.read_data(self.data_validation_artifacts.valid_train_file_path)
-            test_df = DataTranformation.read_data(self.data_validation_artifacts.valid_test_file_path)
+            train_df = DataTranformation.csv_converter(self.data_validation_artifacts.valid_train_file_path)
+            test_df = DataTranformation.csv_converter(self.data_validation_artifacts.valid_test_file_path)
 
             #Training Dataframe
-            input_feature_train_df = train_df.drop(columns=[TARGET_COLUMN], axis= 1)
-            target_feature_train_df = train_df[TARGET_COLUMN]
+            input_feature_train_df = train_df.drop(columns=[TARGET_COLUMN], axis= 1)  #x_train
+            target_feature_train_df = train_df[TARGET_COLUMN]                         #y_train
             target_feature_train_df = target_feature_train_df.replace(-1,0)
         
             #Testing Dataframe
-            input_feature_test_df = test_df.drop(columns=[TARGET_COLUMN], axis= 1)
-            target_feature_test_df = test_df[TARGET_COLUMN]
+            input_feature_test_df = test_df.drop(columns=[TARGET_COLUMN], axis= 1)     #X_test
+            target_feature_test_df = test_df[TARGET_COLUMN]                            #y_test
             target_feature_test_df = target_feature_test_df.replace(-1,0)
             
             
