@@ -13,6 +13,7 @@ TRAIN_FILE_NAME: str = "train.csv"
 TEST_FILE_NAME: str = "test.csv"
 
 SCHEMA_FILE_PATH = os.path.join("data_schema", "schema.yml")
+SAVED_MODEL_DIR = os.path.join("saved_models")
 
 """
 Data Ingestion related constant should always start with DATA_INESTION_VARIABLE_NAME
@@ -63,4 +64,4 @@ MODEL_TRAINER_TRAINED_MODEL_DIR:str = "trained model"
 MODEL_TRAINER_TRAINED_MODEL_NAME:str = "model.pkl"
 MODEL_TRAINER_EXPECTED_SCORE:float = 0.65
 MODEL_TRAINER_OVER_FITTING_UNDER_FITTING_THRESHOLD:float =0.05
-MODEL_FILE_NAME:str = "best model"
+MODEL_FILE_NAME:str = "model.pkl"
