@@ -1,9 +1,11 @@
 from networksecurity.components.data_ingestion import DataIngestion
 from networksecurity.components.data_validation import DataValidation
 from networksecurity.components.data_transformation import DataTranformation
+from networksecurity.components.model_trainer import ModelTrainer
 from networksecurity.exception.exception import NetworkSecurityException
 from networksecurity.logging.logger import logging
-from networksecurity.entity.config_entity import DataIngestionConfig, TrainingPipelineConfig, DataValidationConfig, DataTransformationConfig
+from networksecurity.entity.config_entity import DataIngestionConfig, TrainingPipelineConfig, DataValidationConfig, DataTransformationConfig,ModelTrainerConfig
+
 import sys
 
 
@@ -15,7 +17,7 @@ if __name__ == "__main__":
         
         logging.info("Initiate the data Ingestion")
         dataingestionartifact= data_ingestion.initiate_data_ingestion()
-        print(dataingestionartifact)
+        #print(dataingestionartifact)
         logging.info("Data Initiation Completed")
         
         data_validation_config = DataValidationConfig(training_pipeline_config)
@@ -24,7 +26,7 @@ if __name__ == "__main__":
         data_validation_artifacts =data_validation.initiate_date_validation()
         logging.info("Completed the data Validation")
         
-        print(data_validation_artifacts)
+        #print(data_validation_artifacts)
         
         logging.info("Data Transformation Started")
         data_transformation_config = DataTransformationConfig(training_pipeline_config)
@@ -32,9 +34,16 @@ if __name__ == "__main__":
                                                 data_tranformation_config=data_transformation_config)
         
         data_transformatio_artifacts  = data_transformation.initiate_data_transformation()
-        print(data_transformatio_artifacts)
+        #print(data_transformatio_artifacts)
         logging.info("Data Transformation Completed")
 
+        logging.info("Model Trainer Started")
+        
+        model_trainer_config = ModelTrainerConfig(training_pipeline_config)
+        model_trainer = ModelTrainer(model_trainer_config=model_trainer_config,
+                                     data_transformation_artifacts=data_transformatio_artifacts)
+        
+        model_trainer_artifacts = model_trainer.initiate_model_trainer()
         
     except Exception as e:
         raise NetworkSecurityException(e,sys)

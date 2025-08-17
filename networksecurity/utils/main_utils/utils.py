@@ -1,6 +1,8 @@
 import yaml
 from networksecurity.logging.logger import logging
 from networksecurity.exception.exception import NetworkSecurityException
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import r2_score
 
 import os, sys, numpy as np, dill, pickle
 
@@ -72,3 +74,32 @@ def load_numpy_aaray_data(file_path:str) -> np.array:
             return np.load(file_obj)
     except Exception as e:
         raise NetworkSecurityException(e,sys) from e   
+    
+def evaluate_models(x_train,y_train,x_test,y_test, models, param):
+    try:
+        report ={}
+        for i in range(len(list(models))):
+            model = list(models.values())[i]
+            para = param[list(models.keys())[i]]
+            
+            gs = GridSearchCV(model,para,n_jobs=-1,cv=3, refit=True)
+            gs.fit(x_train,y_train)
+            
+            model.set_params(**gs.best_params_)
+            model.fit(x_train,y_train)
+            
+
+            y_train_pred = model.predict(x_train)
+
+            y_test_pred = model.predict(x_test)
+
+            train_model_score = r2_score(y_train, y_train_pred)
+
+            test_model_score = r2_score(y_test, y_test_pred)
+
+            report[list(models.keys())[i]] = test_model_score
+
+        return report
+    except Exception as e:
+        raise NetworkSecurityException(e,sys) from e
+    
