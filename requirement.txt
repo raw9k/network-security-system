@@ -6,3 +6,4 @@ pymongo
 scikit-learn
 dill
 pyyaml
+mlflow

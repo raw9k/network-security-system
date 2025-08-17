@@ -17,7 +17,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier,GradientBoostingClassifier,RandomForestClassifier
 
-
+import mlflow
 
 class ModelTrainer:
     def __init__(self, model_trainer_config:ModelTrainerConfig, data_transformation_artifacts:DataTransformationArtifacts):
@@ -26,6 +26,18 @@ class ModelTrainer:
             self.data_transformation_artifacts = data_transformation_artifacts
         except Exception as e:
             raise NetworkSecurityException(e,sys)
+    
+    def track_mlflow(self, best_model,classificationmetric):
+        with mlflow.start_run():
+            f1_score = classificationmetric.f1_score
+            precision_score = classificationmetric.precision_score
+            recall_score = classificationmetric.recall_score
+    
+            mlflow.log_metric("f1_score", f1_score)
+            mlflow.log_metric("precision_score", precision_score)
+            mlflow.log_metric("recall_score", recall_score)
+            mlflow.sklearn.log_model(best_model,"model")
+    
     
     def train_model(self, x_train,y_train, x_test,y_test):
         models = {
@@ -75,11 +87,14 @@ class ModelTrainer:
         
         classification_train_metric= get_classification_score(y_true=y_train,y_pred=y_train_pred)
         
-        ##Track the mlflow
-        
+        ##Track the mlflow for train metric
+        self.track_mlflow(best_model=best_model,classificationmetric=classification_train_metric)
         
         y_test_pred = best_model.predict(x_test)
         classification_test_metric = get_classification_score(y_true=y_test,y_pred=y_test_pred)
+        
+        ##Track the mlflow for test metric
+        self.track_mlflow(best_model=best_model,classificationmetric=classification_test_metric)
 
         preprocessor = load_object(file_path=self.data_transformation_artifacts.transformed_object_file_path)
         
