@@ -121,14 +121,14 @@ class ModelTrainer:
             train_arr = load_numpy_aaray_data(train_file_path)
             test_arr = load_numpy_aaray_data(test_file_path)
             
+            
             x_train, y_train, x_test, y_test = (
                 train_arr[:,:-1],
                 train_arr[:,-1],
                 test_arr[:,:-1],
                 test_arr[:,-1]
             )
-            
-            
+
             model = self.train_model(x_train,y_train,x_test,y_test)
         except Exception as e:
             raise NetworkSecurityException(e,sys)
