@@ -1,23 +1,35 @@
 # Network Security System (ML Pipeline)
 
-End‑to‑end machine learning pipeline for network security (e.g. intrusion / anomaly detection) using a modular, reproducible, artifact‑driven architecture.
+End‑to‑end machine learning pipeline for network intrusion / anomaly detection. It ingests raw records from MongoDB, validates structure, transforms and engineers features, trains multiple classifiers with hyperparameter tuning, computes classification metrics, and persists reproducible artifacts (preprocessor + model) for deployment.
 
-## 1. Features
-- Structured pipeline (ingestion → validation → transformation → training → evaluation)
-- MongoDB → Feature Store export
-- Data validation (schema & drift placeholder)
-- Transformation: imputation, preprocessing object persisted
-- Model selection via GridSearchCV (multiple classifiers)
-- Metrics (F1 / Precision / Recall)
-- Centralized exception + logging
-- Artifact versioning by timestamp
-- MLflow tracking ready (hook points)
-- Serialization of preprocessing + model
+## Project Description
+This project demonstrates a modular, timestamped, artifact‑driven ML workflow targeted at detecting malicious or anomalous network activity. Although no specific dataset is bundled here, the design assumes tabular connection / flow / event logs (e.g. features like duration, protocol, byte counts, flags, categorical identifiers). You can plug in any similar schema via MongoDB.
 
-## 2. Tech Stack
-Python, scikit-learn, pandas, numpy, pymongo, PyYAML, dill/pickle, MLflow, dotenv, logging.
+Core goals:
+- Reproducibility (every run generates an isolated artifact set)
+- Separation of concerns (ingestion, validation, transformation, training)
+- Safe persistence (preprocessing object + final model)
+- Extensibility (easily add new models, validation checks, or tracking)
 
-## 3. Project Structure
+## Key Capabilities
+- MongoDB -> Pandas -> Feature Store CSV
+- Train/test split persisted once per run
+- Basic schema size validation (extendable)
+- Transformation pipeline (imputation, encoding/scaling placeholder)
+- GridSearchCV model selection (Logistic Regression, Tree, RF, GBM, AdaBoost)
+- Classification metrics: F1 / Precision / Recall
+- Central logging and structured exceptions
+- MLflow integration hooks (optional)
+- Artifact versioning + optional cleanup utility
+
+## Architecture Overview
+1. Data Ingestion: Pulls collection into DataFrame, cleans sentinel values, exports feature store, produces train/test files.
+2. Data Validation: Verifies expected column count (add schema + drift logic).
+3. Data Transformation: Builds preprocessing object (e.g. imputers, scalers, encoders), fits on train, applies to both, saves numpy arrays + object.
+4. Model Training: Hyperparameter search, selects best estimator, wraps with preprocessing, computes metrics, saves model.
+5. Tracking (Optional): MLflow run stub (extend to log params/metrics/artifacts).
+
+## Folder Structure
 ```
 Network Security System/
 ├── main.py
@@ -45,7 +57,7 @@ Network Security System/
 └── logs/
 ```
 
-## 4. Pipeline Stages (High Level)
+## Pipeline Stages (High Level)
 1. Data Ingestion  
    - Reads MongoDB collection → DataFrame → CSV feature store  
    - Train/test split persisted  
@@ -63,7 +75,7 @@ Network Security System/
    - Classification metrics (F1, Precision, Recall)  
    - MLflow run hook (extend to log params / artifacts)  
 
-## 5. Artifacts
+## Artifacts
 Each run creates:  
 ```
 Artifacts/<timestamp>/
@@ -74,7 +86,7 @@ Artifacts/<timestamp>/
 ```
 You can optionally purge older timestamp folders before a new run (add a cleanup utility).
 
-## 6. Installation
+## Installation
 ```bash
 python -m venv venv
 venv\Scripts\activate
@@ -82,30 +94,30 @@ python -m pip install --upgrade pip
 pip install -r requirement.txt
 ```
 
-## 7. Environment Variables (.env)
+## Environment Variables (.env)
 ```
 MONGO_DB_URL=mongodb+srv://user:pass@host/db
 MLFLOW_TRACKING_URI=http://localhost:5000
 ```
 Add any others (e.g. DB name, collection) if not hardcoded in config_entity.
 
-## 8. Running the Pipeline
+## Running the Pipeline
 ```bash
 python main.py
 ```
 Logs written to logs/<timestamp>. Check console + log file for stage progress.
 
-## 9. Metrics
+## Metrics
 ClassificationMetricArtifacts holds numeric F1, precision, recall (ensure computation function returns floats, not function objects). Extend with ROC-AUC if needed.
 
-## 10. MLflow (Optional)
+## MLflow (Optional)
 Start MLflow server:
 ```bash
 mlflow ui
 ```
 Then ensure track_mlflow logs params, metrics, and model.
 
-## 11. Cleaning Previous Artifacts (Optional Script)
+## Cleaning Previous Artifacts (Optional Script)
 Add a utility to keep only the latest N runs:
 ```python
 import os, shutil
@@ -116,20 +128,20 @@ def retain_latest_artifacts(root="Artifacts", keep=1):
 ```
 Call before TrainingPipelineConfig initialization.
 
-## 12. Error Handling
+## Error Handling
 Custom NetworkSecurityException wraps original exception with file and line context.
 
-## 13. Logging
+## Logging
 Central logger writes INFO/ERROR to timestamped log file + console.
 
-## 14. Extending
+## Extending
 - Add schema.yaml + robust validation
 - Data drift detection (e.g. Evidently)
 - Model registry via MLflow
 - Dockerization + CI/CD
 - REST inference service (FastAPI)
 
-## 15. Troubleshooting
+## Troubleshooting
 | Issue | Cause | Fix |
 |-------|-------|-----|
 | PermissionError saving model | Directory created at file path | Ensure only parent dir made |
@@ -137,8 +149,8 @@ Central logger writes INFO/ERROR to timestamped log file + console.
 | NoneType on model_report | evaluate_models missing return | Return report dict |
 | Duplicate artifact growth | Timestamp accumulation | Add cleanup utility |
 
-## 16. License
+## License
 Add LICENSE file as needed.
 
-## 17. Disclaimer
+## Disclaimer
 For educational / experimental security ML use; not production hardened.
