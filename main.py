@@ -33,15 +33,15 @@ if __name__ == "__main__":
         data_transformation = DataTranformation(data_validation_artifacts=data_validation_artifacts,
                                                 data_tranformation_config=data_transformation_config)
         
-        data_transformatio_artifacts  = data_transformation.initiate_data_transformation()
-        #print(data_transformatio_artifacts)
+        data_transformation_artifacts  = data_transformation.initiate_data_transformation()
+        #print(data_transformation_artifacts)
         logging.info("Data Transformation Completed")
 
         logging.info("Model Trainer Started")
         
         model_trainer_config = ModelTrainerConfig(training_pipeline_config)
         model_trainer = ModelTrainer(model_trainer_config=model_trainer_config,
-                                     data_transformation_artifacts=data_transformatio_artifacts)
+                                     data_transformation_artifacts=data_transformation_artifacts)
         
         model_trainer_artifacts = model_trainer.initiate_model_trainer()
         

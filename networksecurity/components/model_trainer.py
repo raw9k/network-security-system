@@ -2,6 +2,7 @@ from networksecurity.exception.exception import NetworkSecurityException
 from networksecurity.logging.logger import logging
 
 import os,sys
+import tempfile, pickle
 
 from networksecurity.entity.artifact_entity import DataTransformationArtifacts, ModelTrainerArtifacts
 from networksecurity.entity.config_entity import ModelTrainerConfig
@@ -18,6 +19,11 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier,GradientBoostingClassifier,RandomForestClassifier
 
 import mlflow
+import dagshub
+dagshub.init(repo_owner='raw9k', repo_name='network-security-system', mlflow=True)
+
+
+
 
 class ModelTrainer:
     def __init__(self, model_trainer_config:ModelTrainerConfig, data_transformation_artifacts:DataTransformationArtifacts):
@@ -27,17 +33,30 @@ class ModelTrainer:
         except Exception as e:
             raise NetworkSecurityException(e,sys)
     
-    def track_mlflow(self, best_model,classificationmetric):
-        with mlflow.start_run():
-            f1_score = classificationmetric.f1_score
-            precision_score = classificationmetric.precision_score
-            recall_score = classificationmetric.recall_score
-    
-            mlflow.log_metric("f1_score", f1_score)
-            mlflow.log_metric("precision_score", precision_score)
-            mlflow.log_metric("recall_score", recall_score)
-            mlflow.sklearn.log_model(best_model,"model")
-    
+    def track_mlflow(self, best_model, classificationmetric, stage:str="training"):
+        """
+        Log metrics and model to MLflow (artifact only fallback to avoid unsupported endpoint).
+        """
+        try:
+            with mlflow.start_run():
+                # Params (add more if needed)
+                mlflow.log_param("model_class", best_model.__class__.__name__)
+                mlflow.log_param("stage", stage)
+
+                # Metrics
+                mlflow.log_metric("f1_score", classificationmetric.f1_score)
+                mlflow.log_metric("precision", classificationmetric.precision_score)
+                mlflow.log_metric("recall", classificationmetric.recall_score)
+
+                # Manually persist model -> log as artifact (avoid mlflow.sklearn.log_model)
+                with tempfile.TemporaryDirectory() as tmp:
+                    model_path = os.path.join(tmp, "model.pkl")
+                    with open(model_path, "wb") as f:
+                        pickle.dump(best_model, f)
+                    mlflow.log_artifact(model_path, artifact_path="model")
+
+        except Exception as e:
+            logging.warning(f"MLflow logging skipped (reason: {e})")
     
     def train_model(self, x_train,y_train, x_test,y_test):
         models = {
@@ -103,6 +122,8 @@ class ModelTrainer:
         
         Network_Model = NetworkModel(preprocessor=preprocessor,model=best_model)
         save_object(self.model_trainer_config.trained_model_file_path, obj=Network_Model)
+        
+        save_object("Final_models/model.pkl",best_model)
         
         
         ##Model Trainer Artifacts

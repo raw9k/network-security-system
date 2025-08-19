@@ -7,3 +7,6 @@ scikit-learn
 dill
 pyyaml
 mlflow
+dagshub
+fastapi
+uvicorn
