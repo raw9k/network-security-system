@@ -13,6 +13,8 @@ class DataValidation:
     def __init__(self,data_ingestion_artifacts:DataIngestionArtifacts,
                  data_validation_config: DataValidationConfig):
         try:
+            if data_ingestion_artifacts is None:
+                raise ValueError("DataIngestionArtifacts is None (ingestion step failed to return).")
             self.data_ingestion_artifacts = data_ingestion_artifacts
             self.data_validation_config = data_validation_config
             self._schema_config = read_yml_file(SCHEMA_FILE_PATH)
@@ -50,24 +52,21 @@ class DataValidation:
     def detect_data_drift(self, base_df,current_df, threshold = 0.05) -> bool:
         try:
             status = True
-            report ={}
+            report = {}
             for column in base_df.columns:
                 d1 = base_df[column]
                 d2 = current_df[column]
-                is_same_dist = ks_2samp(d1,d2)
-                if threshold <= is_same_dist.pvalue:
-                    is_found = False
-                else:
-                    is_found = True
+                ks = ks_2samp(d1,d2)
+                if ks.pvalue < threshold:
+                    drift = True
                     status = False
-                report.update({column:{
-                    "p_value":float(is_same_dist.pvalue),
-                    "drift_status":is_found
-                }})
+                else:
+                    drift = False
+                report[column] = {"p_value": float(ks.pvalue), "drift_status": drift}
             drift_report_file_path = self.data_validation_config.drift_report_file_path
-            dir_path = os.path.dirname(drift_report_file_path)
-            os.makedirs(dir_path, exist_ok=True)
+            os.makedirs(os.path.dirname(drift_report_file_path), exist_ok=True)
             write_yml_file(file_path=drift_report_file_path, content=report)
+            return status   # FIX: return
         except Exception as e:
             raise NetworkSecurityException(e,sys)
             

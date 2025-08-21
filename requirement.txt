@@ -8,5 +8,6 @@ dill
 pyyaml
 mlflow
 dagshub
-fastapi
+fastapi==0.110.0
 uvicorn
+python-multipart

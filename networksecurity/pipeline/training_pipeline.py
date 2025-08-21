@@ -31,8 +31,9 @@ class TrainingPipeline:
             self.data_ingestion_config = DataIngestionConfig(training_pipeline_config=self.training_pipeline_Config)
             logging.info("Initiate the data Ingestion")
             data_ingestion = DataIngestion(data_ingestion_config=self.data_ingestion_config)
-            dataingestionartifact= data_ingestion.initiate_data_ingestion()
-            logging.info(f"Data initiation has completed and artifact :{dataingestionartifact} is created")
+            dataingestionartifact = data_ingestion.initiate_data_ingestion()
+            logging.info(f"Data initiation completed: {dataingestionartifact}")
+            return dataingestionartifact   # FIX: return artifact
         except Exception as e:
             raise NetworkSecurityException(e,sys)
         
@@ -53,8 +54,8 @@ class TrainingPipeline:
         try:
             logging.info("Data Transformation Started")
             data_transformation_config = DataTransformationConfig(training_pipeline_config=self.training_pipeline_Config)
-            data_transformation = DataTranformation(data_validation_artifacts=data_validation_artifacts,
-                                                data_transformation_config=data_transformation_config)
+            data_transformation = DataTranformation(data_validation_artifacts=data_validation_artifacts, 
+                                                    data_tranformation_config=data_transformation_config)
         
             data_transformation_artifacts  = data_transformation.initiate_data_transformation()
             logging.info("Data Transformation Completed")
@@ -80,4 +81,4 @@ class TrainingPipeline:
             model_trainer_artifacts = self.start_model_trainer(data_transformation_artifacts=data_transformation_artifacts)
             return model_trainer_artifacts
         except Exception as e:
-            raise NetworkSecurityException(e,sys) 
+            raise NetworkSecurityException(e,sys)
