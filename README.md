@@ -1,179 +1,108 @@
-# 📘 Technical Documentation: Network Security System
+# Network Security System
 
----
+## 📌 Overview
 
-## 1. Repository Overview
+The **Network Security System** is an end-to-end phishing detection pipeline built with **FastAPI** and modular ML components. It supports on-demand training and batch predictions while rendering results as structured HTML tables. The system demonstrates production-inspired ML engineering practices such as modular pipelines, centralized logging, and containerized deployment.
 
-This repository implements an **end-to-end machine learning system** for phishing detection, designed with modular components to handle data ingestion, validation, transformation, model training, evaluation, and deployment. The project uses **FastAPI** for exposing prediction services as REST APIs and adheres to a pipeline-driven approach common in production ML systems.
+## ⚙️ Features
 
----
+* **Training Pipeline**: Retrain the phishing detection model through API.
+* **Batch Prediction**: Upload CSV files for predictions; outputs include CSV and HTML visualization.
+* **Frontend Integration**: Predictions displayed in tabular format using Jinja2 templates.
+* **Database Support**: MongoDB backend connectivity with SSL encryption.
+* **Deployment Ready**: Containerized via Docker and served using `uvicorn`.
 
-## 2. Directory & File Structure
+## 📂 Project Structure
 
 ```
 Network Security System/
 │
-├── Network_data/                # Dataset and processed splits (train/test/valid)
-│   └── phisingData.csv
+├── Network_data/               # Raw dataset and splits
+├── networksecurity/            # Core ML pipeline package
+│   ├── components/              # Ingestion, validation, transformation, trainer, evaluation
+│   ├── config/                  # Configurations and constants
+│   ├── entity/                  # Entities for configs and artifacts
+│   ├── exception/               # Custom exceptions
+│   ├── logging/                 # Logging utilities
+│   ├── pipeline/                # Training and prediction orchestration
+│   └── utils/                   # Helper and ML utilities
 │
-├── networksecurity/             # Core package containing all ML pipeline modules
-│   ├── components/              # Data ingestion, validation, transformation, trainer, evaluation
-│   ├── config/                  # Configuration and constants
-│   ├── entity/                  # Artifact and config entity classes
-│   ├── exception/               # Custom exception handling
-│   ├── logging/                 # Logging utility
-│   ├── pipeline/                # Training and prediction pipelines
-│   └── utils/                   # Utility functions
+├── templates/                  # Jinja2 HTML templates
+│   └── table.html               # Table rendering for predictions
 │
-├── app.py                       # FastAPI entry point exposing prediction endpoints
-├── Dockerfile                   # Containerization specification
-├── requirements.txt             # Python dependencies
-└── README.md (to be created)
+├── Final_models/               # Serialized model artifacts
+├── prediction_output/           # Output predictions
+├── app.py                      # FastAPI application entry point
+├── Dockerfile                  # Deployment configuration
+├── requirements.txt             # Dependencies
+└── README.md                    # Documentation (this file)
 ```
 
----
+## 🛠️ Tech Stack
 
-## 3. Environment & Dependencies
+* **Programming Language**: Python
+* **Frameworks**: FastAPI, Starlette, Jinja2
+* **Machine Learning**: scikit-learn, pandas, numpy
+* **Database**: MongoDB, pymongo, certifi
+* **Deployment**: Docker, Uvicorn
 
-* **Core ML Libraries**: `scikit-learn`, `pandas`, `numpy`
-* **API Framework**: `FastAPI`
-* **Database/Env**: `pymongo`, `python-dotenv`
-* **Utilities**: `certifi`, `uvicorn` (for running FastAPI), `logging`
+## 🚀 Getting Started
 
-The project also uses environment variables (via `.env`) for sensitive configs like MongoDB URLs.
+### Prerequisites
 
----
+* Python 3.8+
+* MongoDB instance (with connection string in `.env`)
+* Docker (optional, for containerized deployment)
 
-## 4. System Architecture
+### Installation
 
-The system is designed as a **modular ML pipeline**:
+```bash
+git clone <repo_url>
+cd network-security-system
+pip install -r requirements.txt
+```
 
-1. **Data Ingestion** → Loads data from CSV/DB, stores into feature store, splits into train/test.
-2. **Data Validation** → Ensures dataset schema matches expected columns.
-3. **Data Transformation** → Prepares data (feature scaling, encoding, cleaning).
-4. **Model Training** → Trains ML models on transformed data.
-5. **Model Evaluation** → Compares candidate model against existing best model.
-6. **Model Deployment (Prediction Pipeline)** → Loads best model for batch/single predictions.
-7. **API Layer** → Exposes `/predict` and batch endpoints via FastAPI.
+### Run Locally
 
----
+```bash
+uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+```
 
-## 5. Detailed File-by-File Analysis
+Access API docs at: **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)**
 
-### `networksecurity/components/`
+### Docker Deployment
 
-* **data\_ingestion.py**
+```bash
+docker build -t network-security-system .
+docker run -p 8000:8000 network-security-system
+```
 
-  * Converts raw dataset (CSV/DB) into train/test sets.
-  * Stores ingestion artifacts.
+## 📡 API Endpoints
 
-* **data\_validation.py**
+* `GET /` → Redirect to `/docs`
+* `GET /train` → Run the training pipeline
+* `POST /predict` → Upload CSV, return predictions as HTML table and CSV output
 
-  * Validates column count against schema.
-  * Logs and raises `NetworkSecurityException` if mismatch.
+## 📊 Example Workflow
 
-* **data\_transformation.py**
+1. Navigate to `/docs` to access Swagger UI.
+2. Trigger training via `/train` endpoint.
+3. Upload CSV to `/predict` endpoint.
+4. View predictions rendered in a browser as a formatted HTML table.
 
-  * Applies preprocessing (likely scaling, categorical encoding).
-  * Outputs transformed datasets and preprocessing objects.
+## 🔐 Security & Performance
 
-* **model\_trainer.py**
+* SSL-verified MongoDB connections.
+* Schema validation during ingestion.
+* Efficient batch-oriented predictions.
 
-  * Trains candidate models.
-  * Saves serialized model artifacts.
+## 📈 Future Enhancements
 
-* **model\_evaluation.py**
+* JSON-based single prediction endpoint.
+* Interactive web forms for user input.
+* Automated retraining and monitoring.
+* CI/CD pipeline with unit testing.
 
-  * Compares new model with existing “best” model.
-  * Decides whether to push new model to production.
+## 📝 Conclusion
 
-### `networksecurity/config/`
-
-* Defines schema config, model config, and constants for pipeline reproducibility.
-
-### `networksecurity/entity/`
-
-* **artifact\_entity.py** → Classes to store paths and metadata of artifacts.
-* **config\_entity.py** → Classes to define structured config objects.
-
-### `networksecurity/exception/`
-
-* **exception.py** → Centralized custom exception (`NetworkSecurityException`).
-
-### `networksecurity/logging/`
-
-* **logger.py** → Configured logging utility, used across all modules.
-
-### `networksecurity/pipeline/`
-
-* **training\_pipeline.py** → Orchestrates all pipeline stages sequentially.
-* **prediction\_pipeline.py** → Handles single/batch predictions using saved model.
-
-### `app.py`
-
-* Initializes FastAPI app.
-* Defines endpoints (`/predict`, `/batch_predict`).
-* Connects incoming data to prediction pipeline.
-
----
-
-## 6. Design Patterns & Unique Approaches
-
-* **Pipeline-driven design**: Each stage produces an *artifact entity* that feeds into the next stage.
-* **Config-Entity separation**: Clear distinction between pipeline *configuration* and *runtime artifacts*.
-* **Centralized exception handling**: Custom `NetworkSecurityException` ensures consistent error traces.
-* **Logging integration**: Uniform logging across all modules.
-
----
-
-## 7. API Layer (FastAPI)
-
-* **Swagger UI (`/docs`)**: Interactive documentation and testing UI.
-* **Prediction Endpoints**:
-
-  * `POST /predict` → Accepts JSON input, returns phishing/legitimate prediction.
-  * `POST /batch_predict` → Accepts CSV file, returns predictions for each row.
-
----
-
-## 8. Logging, Exception Handling, Testing
-
-* Logging uses Python’s `logging` module, configured centrally.
-* All components wrap errors in `NetworkSecurityException`, aiding debugging.
-* Testing seems implicit (not unit tests, but validation of pipeline stages via artifacts).
-
----
-
-## 9. Deployment Readiness
-
-* **Dockerfile** enables containerized deployment.
-* **FastAPI + Uvicorn** stack makes it production-ready.
-* Could be deployed on Render, Heroku, AWS ECS, or GCP Cloud Run.
-
----
-
-## 10. Security Considerations & Performance
-
-* **Security**: Current dataset is phishing URLs; API does not directly sanitize inputs beyond schema validation.
-* **Performance**: Suitable for batch prediction; real-time extension possible with minimal code changes.
-
----
-
-## 11. Extensibility Points
-
-* Replace dataset with live feeds from URL logs, WHOIS, SSL checkers.
-* Add new ML models or ensemble methods.
-* Extend API with `/health`, `/train`, `/evaluate` endpoints.
-* Add database (MongoDB/Postgres) integration for storing predictions.
-
----
-
-## 12. Conclusion
-
-This repository represents a **production-inspired ML system** for phishing detection. While it uses an academic dataset, the design choices—pipeline modularity, FastAPI deployment, Dockerization—make it suitable for adaptation into real-world security solutions such as:
-
-* Browser phishing detection plugins
-* Email phishing filters
-* Enterprise security monitoring systems.
-
-The codebase demonstrates not just ML modeling but also **software engineering and MLOps best practices**.
+The **Network Security System** demonstrates a production-ready ML pipeline integrated with FastAPI. With containerization, MongoDB support, and interactive prediction visualization, it can be extended for real-world security domains like **browser plugins, email phishing detection, and enterprise threat monitoring**.
