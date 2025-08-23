@@ -3,8 +3,6 @@ import os
 import shutil
 from networksecurity.constants import training_pipeline
 from networksecurity.logging.logger import logging
-print(training_pipeline.PIPELINE_NAME)
-print(training_pipeline.ARTIFACT_DIR)
 
 class TrainingPipelineConfig:
     def __init__(self,timestamp = datetime.now()):

@@ -10,7 +10,7 @@ import pymongo # type: ignore
 
 
 MONGO_DB_URL = os.getenv("MONGO_DB_URL")
-print(MONGO_DB_URL)
+
 
 import certifi
 ca = certifi.where()
@@ -55,7 +55,6 @@ if __name__=="__main__":
     collection = "NetworkData"
     networkobj = NetworkDataExtract()
     records = networkobj.cv_to_json(file_path = file_path)
-    print(records)
     no_of_records = networkobj.insert_data_mongodb(records=records, database= database,collection=collection)
-    print(no_of_records)
+
     

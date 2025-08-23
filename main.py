@@ -17,7 +17,7 @@ if __name__ == "__main__":
         
         logging.info("Initiate the data Ingestion")
         dataingestionartifact= data_ingestion.initiate_data_ingestion()
-        #print(dataingestionartifact)
+
         logging.info("Data Initiation Completed")
         
         data_validation_config = DataValidationConfig(training_pipeline_config)
@@ -26,7 +26,7 @@ if __name__ == "__main__":
         data_validation_artifacts =data_validation.initiate_date_validation()
         logging.info("Completed the data Validation")
         
-        #print(data_validation_artifacts)
+
         
         logging.info("Data Transformation Started")
         data_transformation_config = DataTransformationConfig(training_pipeline_config)
@@ -34,7 +34,7 @@ if __name__ == "__main__":
                                                 data_tranformation_config=data_transformation_config)
         
         data_transformation_artifacts  = data_transformation.initiate_data_transformation()
-        #print(data_transformation_artifacts)
+
         logging.info("Data Transformation Completed")
 
         logging.info("Model Trainer Started")

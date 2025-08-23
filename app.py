@@ -63,7 +63,7 @@ async def train_route():
 async def predict_route(request: Request,file: UploadFile = File(...)):
     try:
         df=pd.read_csv(file.file)
-        #print(df)
+
         preprocesor=load_object("Final_models/preprocessor.pkl")
         final_model=load_object("Final_models/model.pkl")
         network_model = NetworkModel(preprocessor=preprocesor,model=final_model)
@@ -72,11 +72,10 @@ async def predict_route(request: Request,file: UploadFile = File(...)):
         print(y_pred)
         df['predicted_column'] = y_pred
         print(df['predicted_column'])
-        #df['predicted_column'].replace(-1, 0)
-        #return df.to_json()
+
         df.to_csv('prediction_output/output.csv')
         table_html = df.to_html(classes='table table-striped')
-        #print(table_html)
+
         return templates.TemplateResponse("table.html", {"request": request, "table": table_html})
         
     except Exception as e:

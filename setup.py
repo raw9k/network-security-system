@@ -15,7 +15,7 @@ def get_requirement()->List[str]:
     
     return requirement_list
 
-# print(get_requirement())
+
 
 setup(
      name="network_security",
