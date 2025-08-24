@@ -1,3 +1,5 @@
+.gitignore
+.dockerignore
 #enviroment
 nsenv
 # Byte-compiled / optimized / DLL files

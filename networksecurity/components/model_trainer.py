@@ -10,19 +10,13 @@ from networksecurity.utils.main_utils.utils import save_object, load_object, loa
 from networksecurity.utils.ml_utils.model.estimator import NetworkModel
 from networksecurity.utils.ml_utils.metric.classification_metric import get_classification_score
 
-##ML Algo
-
+## ML Algos
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import r2_score
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import AdaBoostClassifier,GradientBoostingClassifier,RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier, GradientBoostingClassifier, RandomForestClassifier
 
 import mlflow
-import dagshub
-dagshub.init(repo_owner='raw9k', repo_name='network-security-system', mlflow=True)
-
-
 
 
 class ModelTrainer:
@@ -60,11 +54,11 @@ class ModelTrainer:
     
     def train_model(self, x_train,y_train, x_test,y_test):
         models = {
-            "Logistic Regression":LogisticRegression(verbose=1),
-            "DecisionTree Classifier":DecisionTreeClassifier(),
-            "AdaBoost Classifier":AdaBoostClassifier(),
-            "GradientBoosting Classifier":GradientBoostingClassifier(verbose=1),
-            "RandomForest Classifier":RandomForestClassifier(verbose=1)
+            "Logistic Regression": LogisticRegression(verbose=1),
+            "DecisionTree Classifier": DecisionTreeClassifier(),
+            "AdaBoost Classifier": AdaBoostClassifier(),
+            "GradientBoosting Classifier": GradientBoostingClassifier(verbose=1),
+            "RandomForest Classifier": RandomForestClassifier(verbose=1)
         }
         
         params = {
@@ -89,12 +83,11 @@ class ModelTrainer:
                 "n_estimators":[8,16,32,64,128,256],
                 "learning_rate": [1,0.1,0.05,0.01]
             }
-                
-            
         }
+
         model_report:dict = evaluate_models(
             x_train=x_train,y_train=y_train,x_test=x_test,y_test=y_test,models=models,param=params
-            )
+        )
         
         best_model_score = max(sorted(model_report.values()))
         
@@ -106,13 +99,13 @@ class ModelTrainer:
         
         classification_train_metric= get_classification_score(y_true=y_train,y_pred=y_train_pred)
         
-        ##Track the mlflow for train metric
+        ## Track mlflow for train metric
         self.track_mlflow(best_model=best_model,classificationmetric=classification_train_metric)
         
         y_test_pred = best_model.predict(x_test)
         classification_test_metric = get_classification_score(y_true=y_test,y_pred=y_test_pred)
         
-        ##Track the mlflow for test metric
+        ## Track mlflow for test metric
         self.track_mlflow(best_model=best_model,classificationmetric=classification_test_metric)
 
         preprocessor = load_object(file_path=self.data_transformation_artifacts.transformed_object_file_path)
@@ -125,15 +118,17 @@ class ModelTrainer:
         
         save_object("Final_models/model.pkl",best_model)
         
-        
-        ##Model Trainer Artifacts
-        model_trainer_artifacts=ModelTrainerArtifacts(trained_model_file_path=self.model_trainer_config.trained_model_file_path,
-                              train_metric_artifacts=classification_train_metric,
-                              test_metric_artifacts=classification_test_metric)  
+        ## Model Trainer Artifacts
+        model_trainer_artifacts = ModelTrainerArtifacts(
+            trained_model_file_path=self.model_trainer_config.trained_model_file_path,
+            train_metric_artifacts=classification_train_metric,
+            test_metric_artifacts=classification_test_metric
+        )  
         
         logging.info(f"Model Trainer Artifacts: {model_trainer_artifacts}")
         
         return model_trainer_artifacts
+    
     def initiate_model_trainer(self) -> ModelTrainerArtifacts:
         try:
             train_file_path = self.data_transformation_artifacts.transformed_train_file_path
@@ -142,14 +137,12 @@ class ModelTrainer:
             train_arr = load_numpy_aaray_data(train_file_path)
             test_arr = load_numpy_aaray_data(test_file_path)
             
-            
             x_train, y_train, x_test, y_test = (
                 train_arr[:,:-1],
                 train_arr[:,-1],
                 test_arr[:,:-1],
                 test_arr[:,-1]
             )
-
 
             model = self.train_model(x_train,y_train,x_test,y_test)
         except Exception as e:
