@@ -17,7 +17,7 @@ from networksecurity.pipeline.training_pipeline import TrainingPipeline
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, File, UploadFile,Request
 from uvicorn import run as app_run
-from fastapi.responses import Response
+from fastapi.responses import Response, HTMLResponse
 from starlette.responses import RedirectResponse
 import pandas as pd
 
@@ -47,6 +47,10 @@ app.add_middleware(
 from fastapi.templating import Jinja2Templates
 templates = Jinja2Templates(directory="./templates")
 
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request})
+
 @app.get("/", tags=["authentication"])
 async def index():
     return RedirectResponse(url="/docs")
@@ -61,9 +65,10 @@ async def train_route():
         raise NetworkSecurityException(e,sys)
     
 @app.post("/predict")
-async def predict_route(request: Request,file: UploadFile = File(...)):
+async def predict_route(request: Request, file: UploadFile = File(...)):
     try:
-        df=pd.read_csv(file.file)
+        contents = await file.read()
+        df = pd.read_csv(pd.io.common.BytesIO(contents))
 
         preprocesor=load_object("Final_models/preprocessor.pkl")
         final_model=load_object("Final_models/model.pkl")
@@ -75,10 +80,25 @@ async def predict_route(request: Request,file: UploadFile = File(...)):
         print(df['predicted_column'])
 
         df.to_csv('prediction_output/output.csv')
-        table_html = df.to_html(classes='table table-striped')
-
-        return templates.TemplateResponse("table.html", {"request": request, "table": table_html})
+        df['status'] = df['predicted_column'].apply(lambda x: 'Legitimate' if x == 1 else 'Phishing')
         
+        # Summary info
+        total = len(df)
+        phishing = (df['status'] == 'Phishing').sum()
+        legitimate = (df['status'] == 'Legitimate').sum()
+        
+        table_html = df.to_html(classes='table table-striped', index=False)
+
+        return templates.TemplateResponse(
+            "table.html",
+            {
+                "request": request,
+                "table": table_html,
+                "total": total,
+                "phishing": phishing,
+                "legitimate": legitimate
+            }
+        )
     except Exception as e:
             raise NetworkSecurityException(e,sys)
 
