@@ -6,59 +6,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #c7a3eb 100%);
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background-color: #1c1c1c;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .navbar-brand {
+            font-weight: 600;
+            color: #ffffff !important;
+        }
+        .card {
+            background-color: #1c1c1c;
+            border: 1px solid #333;
+        }
+        .btn-custom {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+        }
+        .btn-custom:hover {
+            background-color: #e63939;
+        }
+        a {
+            color: #ff4d4d;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: #ff6666;
+        }
+        .stats-box {
+            background-color: #1c1c1c;
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+        .highlight {
+            color: #ff4d4d;
+        }
+        .badge-red {
+            background-color: #ff4d4d;
             color: white;
         }
-        .gradient-footer {
-            background: linear-gradient(135deg, #667eea 0%, #c7a3eb 100%);
+        .badge-green {
+            background-color: #28a745;
             color: white;
-            border-top: 1px solid #eee;
+        }
+        footer {
+            margin-top: auto;
+            border-top: 1px solid #2a2a2a;
+            background-color: #1c1c1c;
+            color: #aaa;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar gradient-bg mb-4">
-        <div class="container">
-            <a class="navbar-brand text-white" href="/">🛡️ Network Security System</a>
-            <a class="btn btn-outline-light" href="/docs">API Docs</a>
-        </div>
+    <nav class="navbar px-3 mb-4">
+        <a class="navbar-brand" href="/">🛡️ Network Security</a>
+        <a class="btn btn-custom" href="/docs">API Docs</a>
     </nav>
+
     <div class="container">
-        <div class="row justify-content-center mb-4">
-            <div class="col-md-8 text-center">
-                <h2 class="fw-bold mb-3 gradient-bg py-4 rounded">Phishing Analysis Results</h2>
-                <p class="text-muted">Below are the predictions for your uploaded CSV file.</p>
-                <div class="gradient-bg mt-3 text-center rounded py-3">
-                    <strong>Total URLs analyzed:</strong> {{ total }}<br>
-                    <strong>Phishing detected:</strong> {{ phishing }}<br>
-                    <strong>Legitimate detected:</strong> {{ legitimate }}
+        <h2 class="text-center mb-4 highlight">Phishing Analysis Results</h2>
+
+        <!-- Info Section -->
+        <div class="stats-box text-center">
+            <h5 class="mb-3">📊 Analysis Summary</h5>
+            <p><strong>Total URLs analyzed:</strong> {{ total }}</p>
+            <p><strong>Phishing detected:</strong> <span class="badge badge-red">{{ phishing }}</span></p>
+            <p><strong>Legitimate detected:</strong> <span class="badge badge-green">{{ legitimate }}</span></p>
+        </div>
+
+        <!-- Table Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    {{ table | safe }}
                 </div>
             </div>
         </div>
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            {{ table|safe }}
-                        </div>
-                    </div>
-                </div>
-                <div class="text-center mt-4">
-                    <a href="/" class="btn" style="background: linear-gradient(135deg, #667eea 0%, #c7a3eb 100%); color: white; border: none;">
-                        Analyze Another File
-                    </a>
-                </div>
-            </div>
+
+        <div class="text-center">
+            <a href="/" class="btn btn-custom">Analyze Another File</a>
         </div>
     </div>
-    <footer class="gradient-footer text-center py-3 mt-5">
-        <small>
-            &copy; 2025 Network Security System &mdash; Developed by Rounak Kumar<br>
-            Contact: <a href="mailto:rounakgupta914@gmail.com" class="text-white text-decoration-underline">rounakgupta914@gmail.com</a>
-        </small>
+
+    <footer class="text-center py-3 mt-5">
+        <small>&copy; 2025 <span class="highlight">Network Security System</span> — Rounak Kumar</small><br>
+        Contact: <a href="mailto:rounakgupta914@gmail.com" class="text-white">rounakgupta914@gmail.com</a>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

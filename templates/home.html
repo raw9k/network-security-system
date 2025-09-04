@@ -6,70 +6,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #667eea 0%, #c7a3eb 100%);
-            color: white;
+        body {
+            background-color: #121212;
+            color: #e0e0e0;
+            font-family: "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .gradient-footer {
-            background: linear-gradient(135deg, #667eea 0%, #c7a3eb 100%);
+        .navbar {
+            background-color: #1c1c1c;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        .navbar-brand {
+            font-weight: 600;
+            color: #ffffff !important;
+        }
+        .card {
+            background-color: #1c1c1c;
+            border: 1px solid #2c2727;
+        }
+        .btn-custom {
+            background-color: #ff4d4d;
             color: white;
-            border-top: 1px solid #eee;
+            border: none;
+        }
+        .btn-custom:hover {
+            background-color: #e63939;
+        }
+        a {
+            color: #ff4d4d;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: #ff6666;
+        }
+        footer {
+            margin-top: auto;
+            border-top: 1px solid #2a2a2a;
+            background-color: #1c1c1c;
+            color: #aaa;
+        }
+        .highlight {
+            color: #ff4d4d;
         }
     </style>
 </head>
 <body>
-    <nav class="navbar gradient-bg mb-4">
-        <div class="container">
-            <a class="navbar-brand text-white" href="/">🛡️ Network Security System</a>
-            <a class="btn btn-outline-light" href="/docs">API Docs</a>
-        </div>
+    <nav class="navbar px-3 mb-5">
+        <a class="navbar-brand" href="/">🛡️ Network Security</a>
+        <a class="btn btn-custom" href="/docs">API Docs</a>
     </nav>
-    <div class="container">
-        <div class="row justify-content-center mb-5">
-            <div class="col-md-8 text-center">
-                <h1 class="display-5 fw-bold mb-3 gradient-bg py-4 rounded">Phishing Detection & Analysis</h1>
-                <p class="lead mb-4">Upload your CSV file of URL features to detect phishing threats using machine learning.</p>
-            </div>
-        </div>
+
+    <div class="container text-center">
+        <h1 class="mb-3 highlight">Phishing Detection</h1>
+        <p class="text-white">Upload a CSV file of URLs for <span class="highlight">batch threat analysis</span>.</p>
+
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-header gradient-bg text-white text-center">
-                        <h4 class="mb-0">Batch Prediction</h4>
-                    </div>
-                    <div class="card-body">
-                        <form action="/predict" method="post" enctype="multipart/form-data">
-                            <div class="mb-3">
-                                <label for="file" class="form-label">Upload CSV File</label>
-                                <input type="file" class="form-control" id="file" name="file" accept=".csv" required>
-                                <div class="form-text">CSV must match the feature schema used for training.</div>
-                            </div>
-                            <button type="submit" class="btn w-100" style="background: linear-gradient(135deg, #667eea 0%, #c7a3eb 100%); color: white; border: none;">
-                                Analyze
-                            </button>
-                        </form>
-                    </div>
+                <div class="card shadow-sm p-4">
+                    <form action="/predict" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="file" class="text-white">CSV File</label>
+                            <input type="file" class="form-control" id="file" name="file" accept=".csv" required>
+                        </div>
+                        <button type="submit" class="btn btn-custom w-100">Analyze</button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="gradient-bg mt-4 text-center rounded py-3">
-            <strong>Need a sample CSV?</strong>
-            <a href="https://drive.google.com/file/d/1yfZsJ2ulzqPn391BvhjZpPqyBJLANfZK/view?usp=sharing" target="_blank" class="btn btn-light btn-sm ms-2">
-                Download Test File
-            </a>
-        </div>
-        <div class="row mt-5">
-            <div class="col text-center">
-                <p class="text-muted">For API integration, see <a href="/docs">Swagger Docs</a>.</p>
-            </div>
-        </div>
+
+        <p class="mt-4">
+            Need a sample? 
+            <a href="https://drive.google.com/file/d/1yfZsJ2ulzqPn391BvhjZpPqyBJLANfZK/view?usp=sharing" target="_blank">Download Test File</a>
+        </p>
     </div>
-    <footer class="gradient-footer text-center py-3 mt-5">
-        <small>
-            &copy; 2025 Network Security System &mdash; Developed by Rounak Kumar<br>
-            Contact: <a href="mailto:rounakgupta914@gmail.com" class="text-white text-decoration-underline">rounakgupta914@gmail.com</a>
-        </small>
+
+    <footer class="text-center py-3">
+        <small>&copy; <span class="highlight">Network Security System</span> — Rounak Kumar</small><br>
+        Contact: <a href="mailto:rounakgupta914@gmail.com" class="text-white">rounakgupta914@gmail.com</a>
+
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
