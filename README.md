@@ -1,108 +1,102 @@
-# Network Security System
+# 🛡️ Network Security System
 
 ## 📌 Overview
+The **Network Security System** is an end-to-end **phishing detection pipeline** built with **FastAPI** and modular ML components.  
+It allows users to either:  
+1. **Upload a CSV file** for batch phishing detection (results shown in an HTML table).  
+2. **Use the REST API** endpoints programmatically for training and prediction.  
 
-The **Network Security System** is an end-to-end phishing detection pipeline built with **FastAPI** and modular ML components. It supports on-demand training and batch predictions while rendering results as structured HTML tables. The system demonstrates production-inspired ML engineering practices such as modular pipelines, centralized logging, and containerized deployment.
+The system demonstrates **production-style ML engineering practices**, including modular pipelines, centralized logging, Docker-based deployment, and integration with cloud platforms (Azure).
+
+---
+
+## 🚀 Live Demo  
+
+🌐 Web App: https://networksecurity-h4hsc3bph3fmevfq.centralus-01.azurewebsites.net  
+📦 Docker Hub: https://hub.docker.com/r/raw9k/network-security-app  
+
+---
 
 ## ⚙️ Features
 
-* **Training Pipeline**: Retrain the phishing detection model through API.
-* **Batch Prediction**: Upload CSV files for predictions; outputs include CSV and HTML visualization.
-* **Frontend Integration**: Predictions displayed in tabular format using Jinja2 templates.
-* **Database Support**: MongoDB backend connectivity with SSL encryption.
-* **Deployment Ready**: Containerized via Docker and served using `uvicorn`.
+- **Training Pipeline**: Retrain the phishing detection model via API (`/train`).  
+- **Batch Prediction**: Upload CSVs for phishing detection; results saved as CSV and rendered as HTML tables.  
+- **Dual Usage**: Accessible both through a **browser-based interface** and **API clients** (e.g., Postman, curl).  
+- **Optional Database Support**: MongoDB integration for ingestion (can be disabled in deployment).  
+- **Cloud-Ready Deployment**: Containerized with Docker, deployed on **Azure Web App for Containers**.  
+---
 
-## 📂 Project Structure
+## 🧑‍💻 Usage  
 
-```
-Network Security System/
-│
-├── Network_data/               # Raw dataset and splits
-├── networksecurity/            # Core ML pipeline package
-│   ├── components/              # Ingestion, validation, transformation, trainer, evaluation
-│   ├── config/                  # Configurations and constants
-│   ├── entity/                  # Entities for configs and artifacts
-│   ├── exception/               # Custom exceptions
-│   ├── logging/                 # Logging utilities
-│   ├── pipeline/                # Training and prediction orchestration
-│   └── utils/                   # Helper and ML utilities
-│
-├── templates/                  # Jinja2 HTML templates
-│   └── table.html               # Table rendering for predictions
-│
-├── Final_models/               # Serialized model artifacts
-├── prediction_output/           # Output predictions
-├── app.py                      # FastAPI application entry point
-├── Dockerfile                  # Deployment configuration
-├── requirements.txt             # Dependencies
-└── README.md                    # Documentation (this file)
-```
+### 1. Web Interface  
+- Go to the deployed Azure app.  
+- Upload a CSV file containing URL features.  
+- Receive phishing detection results in a **styled HTML table** with summary statistics.  
+
+### 2. API Endpoints:  
+- `GET /` → Redirects to API docs.  
+- `POST /predict` → Upload a CSV file for predictions (returns results as JSON or HTML).  
+- `GET /train` → Retrains the ML pipeline (requires MongoDB).
+
+---
 
 ## 🛠️ Tech Stack
 
-* **Programming Language**: Python
-* **Frameworks**: FastAPI, Starlette, Jinja2
-* **Machine Learning**: scikit-learn, pandas, numpy
-* **Database**: MongoDB, pymongo, certifi
-* **Deployment**: Docker, Uvicorn
+- **Language**: Python 3.10+  
+- **Backend**: FastAPI, Starlette, Uvicorn  
+- **Machine Learning**: Scikit-learn, Pandas, Numpy  
+- **Deployment**: Docker, Azure Web App  
+- **Optional Storage**: MongoDB (for ingestion + retraining)  
+- **Templating**: Jinja2 + Bootstrap (UI for CSV upload & results)  
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-
-* Python 3.8+
-* MongoDB instance (with connection string in `.env`)
-* Docker (optional, for containerized deployment)
+- Python 3.10+  
+- Docker (optional, for containerized deployment)  
+- MongoDB instance *(only required if you want retraining from raw data ingestion)*  
 
 ### Installation
 
 ```bash
-git clone <repo_url>
+git clone https://github.com/raw9k/network-security-system.git
 cd network-security-system
 pip install -r requirements.txt
 ```
-
 ### Run Locally
-
 ```bash
 uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 ```
+Now you can access the system:
 
-Access API docs at: **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)**
+API Docs → http://127.0.0.1:8000/docs
 
-### Docker Deployment
+Home Page → http://127.0.0.1:8000/
 
+### 🐳 Docker Deployment
+Build and run the Docker container:
 ```bash
 docker build -t network-security-system .
 docker run -p 8000:8000 network-security-system
 ```
+### 📊 Example Workflow
 
-## 📡 API Endpoints
+1. Open the home page in browser: http://localhost:8000
+2. Upload a CSV file of URL features for batch analysis.
+3. View phishing predictions in a styled HTML table.
+4. Or, go to /docs for Swagger UI to interact with the API.
 
-* `GET /` → Redirect to `/docs`
-* `GET /train` → Run the training pipeline
-* `POST /predict` → Upload CSV, return predictions as HTML table and CSV output
+### ☁️ Deployment on Azure
 
-## 📊 Example Workflow
+1. Built into a Docker image and deployed to Azure Web App for Containers.
+2. Supports both batch file uploads and REST API usage.
+3. CI/CD integration possible via GitHub Actions.
 
-1. Navigate to `/docs` to access Swagger UI.
-2. Trigger training via `/train` endpoint.
-3. Upload CSV to `/predict` endpoint.
-4. View predictions rendered in a browser as a formatted HTML table.
-
-## 🔐 Security & Performance
-
-* SSL-verified MongoDB connections.
-* Schema validation during ingestion.
-* Efficient batch-oriented predictions.
-
-## 📈 Future Enhancements
-
-* JSON-based single prediction endpoint.
-* Interactive web forms for user input.
-* Automated retraining and monitoring.
-* CI/CD pipeline with unit testing.
+---
 
 ## 📝 Conclusion
 
-The **Network Security System** demonstrates a production-ready ML pipeline integrated with FastAPI. With containerization, MongoDB support, and interactive prediction visualization, it can be extended for real-world security domains like **browser plugins, email phishing detection, and enterprise threat monitoring**.
+The Network Security System combines machine learning, REST APIs, and cloud deployment into a single project.
+With its modular design, Docker support, and Azure deployment, it serves as a strong prototype for real-world phishing detection systems, suitable for browser plugins, secure email gateways, and enterprise security monitoring.
